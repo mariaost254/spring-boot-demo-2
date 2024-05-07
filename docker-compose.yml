@@ -1,5 +1,10 @@
 version: "3.8"
 services:
+  redis:
+    image: redis
+    container_name: my-redis-container
+    ports:
+      - "6379:6379"
   db:
     image: postgres
     container_name: demo_pgdb

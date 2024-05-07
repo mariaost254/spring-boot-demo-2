@@ -1,4 +1,4 @@
-package com.demo.payload;
+package com.demo.payload.products;
 
 import lombok.*;
 

@@ -1,13 +1,14 @@
 package com.demo.service;
 
 import com.demo.model.ProductEntity;
-import com.demo.payload.GenericResponse;
-import com.demo.payload.ProductRequest;
-import com.demo.payload.ProductsAPIResponse;
-import com.demo.payload.ProductsResponseDTO;
+import com.demo.payload.products.GenericResponse;
+import com.demo.payload.products.ProductRequest;
+import com.demo.payload.products.ProductsAPIResponse;
+import com.demo.payload.products.ProductsResponseDTO;
 import com.demo.repositories.ProductsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -31,7 +31,8 @@ public class ProductsService {
     @Autowired
     private ProductsRepository productsRepository;
 
-    public ResponseEntity<ProductsResponseDTO> getAllProducts() {
+    @Cacheable("products")
+    public ProductsResponseDTO getAllProducts() {
         RestTemplate restTemplate = new RestTemplate();
         ProductsAPIResponse result = restTemplate.getForObject(PRODUCTS_URL, ProductsAPIResponse.class);
         List<ProductEntity> products = new ArrayList<>();
@@ -54,12 +55,12 @@ public class ProductsService {
                     .collect(Collectors.toList());
         }
         productsRepository.saveAll(products); //move to AOP later
-        return new ResponseEntity<ProductsResponseDTO>(ProductsResponseDTO.builder()
-                .products(products)
-                .build(), HttpStatus.OK);
+        return ProductsResponseDTO.builder().products(products).build();
     }
 
+    //TODO chache evict, put ...
     public ResponseEntity<GenericResponse> saveProduct(ProductRequest u) {
+        //TODO add dummy save to exernal api and evict cache here
         ProductEntity productEntity = ProductEntity.builder()
                 .brand(u.getBrand())
                 .category(u.getCategory())

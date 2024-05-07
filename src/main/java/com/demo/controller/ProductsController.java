@@ -1,11 +1,12 @@
 package com.demo.controller;
 
-import com.demo.payload.GenericResponse;
-import com.demo.payload.ProductRequest;
-import com.demo.payload.ProductsResponseDTO;
+import com.demo.payload.products.GenericResponse;
+import com.demo.payload.products.ProductRequest;
+import com.demo.payload.products.ProductsResponseDTO;
 import com.demo.service.ProductsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class ProductsController {
 
     @GetMapping
     public ResponseEntity<ProductsResponseDTO> getAllProducts(){
-        return productsService.getAllProducts();
+        return ResponseEntity.ok(productsService.getAllProducts());
     }
 
     @GetMapping("/{id}")

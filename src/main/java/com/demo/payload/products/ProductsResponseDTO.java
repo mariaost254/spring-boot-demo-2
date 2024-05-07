@@ -1,8 +1,9 @@
-package com.demo.payload;
+package com.demo.payload.products;
 
 import com.demo.model.ProductEntity;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Getter
@@ -10,6 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProductsResponseDTO {
+public class ProductsResponseDTO implements Serializable {
     List<ProductEntity> products;
 }
