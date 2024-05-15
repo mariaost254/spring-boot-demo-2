@@ -1,8 +1,7 @@
 package com.demo.configuration;
-
-import com.demo.payload.players.PlayerAPI;
 import com.demo.utils.CSVparser;
-import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
+import com.demo.utils.Utils;
+import org.hibernate.internal.util.collections.BoundedConcurrentHashMap;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -11,8 +10,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
@@ -30,12 +29,18 @@ public class config {
         return new CSVparser();
     }
 
+
+    @Bean
+    public Utils utils() {
+        return new Utils();
+    }
+
+    @Bean
+    public ServerWebSocketHandler serverWebSocketHandler(){ return new ServerWebSocketHandler();}
+
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
-         JedisConnectionFactory factory = new JedisConnectionFactory();
-         factory.setHostName("localhost");
-         factory.setPort(6379);
-         return factory;
+        return new JedisConnectionFactory();
     }
 
     @Bean
@@ -49,12 +54,9 @@ public class config {
     }
 
     @Bean
-    RedisTemplate<String, ?> redisTemplate(RedisConnectionFactory connectionFactory) {
+    RedisTemplate<String, ?> redisTemplate() {
         RedisTemplate<String, ?> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(connectionFactory);
-
         GenericJackson2JsonRedisSerializer jackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
-
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
