@@ -4,16 +4,12 @@ import com.demo.payload.players.PlayerAPI;
 import com.demo.payload.players.PlayerCSV;
 import com.demo.utils.CSVparser;
 import com.demo.utils.RedisCacheable;
-import com.demo.utils.errors.PlayerServiceException;
+import com.demo.utils.exceptions.PlayerServiceException;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,7 +27,7 @@ public class PlayerService {
         try {
             List<PlayerCSV> playerscsv = csvParser.convertCSVToObject("players.csv");
             List<String> ids = playerscsv.stream()
-                    .map(p -> p.getId().toString())
+                    .map(p -> p.id().toString())
                     .collect(Collectors.toList());
             List<PlayerAPI.Player> players = redisTemplate.opsForValue().multiGet(ids);
 
@@ -41,9 +37,9 @@ public class PlayerService {
 
             playerscsv.forEach(csvPlayer -> {
                 players.stream()
-                        .filter(apiPlayer -> apiPlayer.getId().equals(csvPlayer.getId()))
+                        .filter(apiPlayer -> apiPlayer.getId().equals(csvPlayer.id()))
                         .findFirst()
-                        .ifPresent(apiPlayer -> apiPlayer.setNickname(csvPlayer.getNickname()));
+                        .ifPresent(apiPlayer -> apiPlayer.setNickname(csvPlayer.nickname()));
             });
 
             return csvParser.createCSVFileFromList(players);

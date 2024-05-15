@@ -1,12 +1,9 @@
 package com.demo.payload.products;
 
-import lombok.*;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class GenericResponse {
-    private String msg;
+public record GenericResponse (String msg){
+
+    public GenericResponse(String msg){
+        this.msg = msg;
+    }
 }

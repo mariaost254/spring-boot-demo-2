@@ -37,7 +37,7 @@ public class Utils {
     }
 
     public static String paramsBuilder(List<PlayerCSV> players){
-        List<Long> ids = players.stream().map(PlayerCSV::getId).collect(Collectors.toList());
+        List<Long> ids = players.stream().map(PlayerCSV::id).collect(Collectors.toList());
         StringBuilder stringBuilder = new StringBuilder();
         for(int i= 0 ; i< ids.size()-1; i++){
             stringBuilder.append("player_ids[]=").append(ids.get(i).toString()).append("&");

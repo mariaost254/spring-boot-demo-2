@@ -1,4 +1,4 @@
-package com.demo.utils.errors;
+package com.demo.utils.exceptions;
 
 public class PlayerServiceException extends RuntimeException {
     public PlayerServiceException(String message) {

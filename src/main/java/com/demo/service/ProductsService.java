@@ -1,11 +1,9 @@
 package com.demo.service;
 
 import com.demo.model.ProductEntity;
-import com.demo.payload.products.GenericResponse;
-import com.demo.payload.products.ProductRequest;
-import com.demo.payload.products.ProductsAPIResponse;
-import com.demo.payload.products.ProductsResponseDTO;
+import com.demo.payload.products.*;
 import com.demo.repositories.ProductsRepository;
+import com.demo.utils.exceptions.ProductsServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -16,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -54,12 +53,12 @@ public class ProductsService {
                             .build())
                     .collect(Collectors.toList());
         }
-        productsRepository.saveAll(products); //move to AOP later
+        productsRepository.saveAll(products); //TODO - custom caching - with db and api -> fetch from db
         return ProductsResponseDTO.builder().products(products).build();
     }
 
     //TODO chache evict, put ...
-    public ResponseEntity<GenericResponse> saveProduct(ProductRequest u) {
+    public GenericResponse saveProduct(ProductRequest u) {
         //TODO add dummy save to exernal api and evict cache here
         ProductEntity productEntity = ProductEntity.builder()
                 .brand(u.getBrand())
@@ -74,10 +73,10 @@ public class ProductsService {
                 .title(u.getTitle())
                 .build();
         productsRepository.save(productEntity);
-        return new ResponseEntity<GenericResponse>(GenericResponse.builder().msg("Success").build(), HttpStatus.OK);
+        return new GenericResponse("Success");
     }
 
-    public ResponseEntity<GenericResponse> updateProduct(ProductRequest u) {
+    public GenericResponse updateProduct(ProductRequest u) {
         Optional<ProductEntity> productOptional = productsRepository.findById(u.getId());
         if (productOptional.isPresent()) {
             ProductEntity productEntity = productOptional.get();
@@ -92,24 +91,27 @@ public class ProductsService {
             productEntity.setThumbnail(u.getThumbnail());
             productEntity.setTitle(u.getTitle());
             productsRepository.save(productEntity);
-            return ResponseEntity.ok(GenericResponse.builder().msg("Success").build());
+            return new GenericResponse("Success");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(GenericResponse.builder().msg("Product not found").build());
+        throw new ProductsServiceException("Product not found");
     }
 
-    public ResponseEntity<?> getById(Integer id) {
+    public ProductDTO getById(Integer id) {
         Optional<ProductEntity> product = productsRepository.findById(id);
         if(product.isPresent()){
-            return new ResponseEntity<>(product.get(), HttpStatus.OK);
+            return ProductDTO.builder()
+                    .id(product.get().getId())
+                    .brand(product.get().getBrand())
+                    .build();
         }
-        return new ResponseEntity<>(GenericResponse.builder().msg("Success").build(), HttpStatus.NOT_FOUND);
+        throw new ProductsServiceException("Product not found");
     }
 
-    public ResponseEntity<GenericResponse> deleteById(Integer id) {
+    public GenericResponse deleteById(Integer id) {
         if(productsRepository.existsById(id)){
             productsRepository.deleteById(id);
-            return ResponseEntity.ok(GenericResponse.builder().msg("Success").build());
+            return new GenericResponse("Success");
         }
-        return new ResponseEntity<>(GenericResponse.builder().msg("Product not found").build(), HttpStatus.NOT_FOUND);
+        throw new ProductsServiceException("Product not found");
     }
 }

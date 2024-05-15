@@ -44,7 +44,7 @@ public class PlayerCacheAspect {
     public Object cacheData(ProceedingJoinPoint joinPoint, RedisCacheable redisCacheable){
         List<PlayerCSV> playerscsv= csvParser.convertCSVToObject("players.csv");
         List<PlayerCSV> playerscsvMissing = playerscsv.stream()
-                .filter(p -> redisTemplate.opsForValue().get(String.valueOf(p.getId())) == null)
+                .filter(p -> redisTemplate.opsForValue().get(String.valueOf(p.id())) == null)
                 .collect(Collectors.toList());
 
         if(!playerscsvMissing.isEmpty()) {

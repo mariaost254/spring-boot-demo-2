@@ -1,9 +1,8 @@
 package com.demo.controller;
 
-import com.demo.payload.products.GenericResponse;
-import com.demo.payload.products.ProductRequest;
-import com.demo.payload.products.ProductsResponseDTO;
+import com.demo.payload.products.*;
 import com.demo.service.ProductsService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,22 +24,24 @@ public class ProductsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Integer id){
-        return productsService.getById(id);
+    public ResponseEntity<ProductDTO> getById(@PathVariable Integer id){
+        return ResponseEntity.ok(productsService.getById(id));
     }
 
     @PostMapping("/add")
-    public ResponseEntity<GenericResponse> addProduct(@Validated @RequestBody ProductRequest productRequest){
-        return productsService.saveProduct(productRequest);
+    public ResponseEntity<GenericResponse> addProduct(@Valid @RequestBody ProductRequest productRequest){
+        return ResponseEntity.ok(productsService.saveProduct(productRequest));
     }
 
     @PutMapping("/update")
-    public ResponseEntity<GenericResponse> updateProduct(@Validated @RequestBody ProductRequest productRequest){
-        return productsService.updateProduct(productRequest);
+    public ResponseEntity<GenericResponse> updateProduct(@Valid @RequestBody ProductRequest productRequest){
+        return ResponseEntity.ok(productsService.updateProduct(productRequest));
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<GenericResponse> deleteById(@PathVariable Integer id){
-        return productsService.deleteById(id);
+        return ResponseEntity.ok(productsService.deleteById(id));
     }
+
+    //TODO add pagination
 }

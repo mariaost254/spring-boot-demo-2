@@ -23,9 +23,7 @@ public class CSVparser {
             reader.readNext();
 
             while ((line = reader.readNext()) != null) {
-                PlayerCSV object = new PlayerCSV();
-                object.setId(Long.parseLong(line[0]));
-                object.setNickname(line[1]);
+                PlayerCSV object = new PlayerCSV(Long.parseLong(line[0]), line[1]);
                 objects.add(object);
             }
         }

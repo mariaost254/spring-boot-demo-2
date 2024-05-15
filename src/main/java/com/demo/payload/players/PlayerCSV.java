@@ -1,13 +1,5 @@
 package com.demo.payload.players;
 
-import lombok.*;
+public record PlayerCSV(Long id, String nickname) {
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class PlayerCSV {
-    private Long id;
-    private String nickname;
 }
