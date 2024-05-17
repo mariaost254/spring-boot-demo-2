@@ -16,6 +16,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Configuration
 public class config {
@@ -39,6 +41,11 @@ public class config {
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
         return new JedisConnectionFactory();
+    }
+
+    @Bean
+    public Lock registryLock() {
+        return new ReentrantLock();
     }
 
     @Bean

@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +33,9 @@ public class ProductsService {
 
     @Autowired
     private ProductsRepository productsRepository;
+
+    @Autowired
+    private Lock registryLock;
 
     @Autowired
     private final RedisTemplate<String, ProductEntity> redisTemplateProducts;
@@ -78,7 +82,9 @@ public class ProductsService {
     public ProductsResponseDTO getAllProducts(){
         List<ProductEntity> products = new ArrayList<>();
         products = productsRepository.findAll();
-        if(products.size() > Objects.requireNonNull(redisTemplateProducts.opsForList().size("products"))) {
+        if(products.isEmpty() || products.size() > Objects.requireNonNull(redisTemplateProducts.opsForList().size("products"))) {
+            registryLock.lock();
+            try {
             ProductsAPIResponse result = restTemplate.getForObject(PRODUCTS_URL, ProductsAPIResponse.class);
             if (result != null) {
                 products = result.getProducts()
@@ -100,6 +106,9 @@ public class ProductsService {
             }
             productsRepository.saveAll(products);
             products.forEach(this::cacheProduct);
+            } finally {
+                registryLock.unlock();
+            }
         }
         return ProductsResponseDTO.builder().products(productsRepository.findAll()).build();
     }
