@@ -1,4 +1,5 @@
 package com.demo.configuration;
+import com.demo.model.ProductEntity;
 import com.demo.utils.CSVparser;
 import com.demo.utils.Utils;
 import org.hibernate.internal.util.collections.BoundedConcurrentHashMap;
@@ -29,11 +30,8 @@ public class config {
         return new CSVparser();
     }
 
-
     @Bean
-    public Utils utils() {
-        return new Utils();
-    }
+    public Utils utils() { return new Utils(); }
 
     @Bean
     public ServerWebSocketHandler serverWebSocketHandler(){ return new ServerWebSocketHandler();}

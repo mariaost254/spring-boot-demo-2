@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -47,6 +48,7 @@ public class ProductEntity implements Serializable {
     @Column(name = "thumbnail")
     private String thumbnail;
 
-    @ElementCollection
-    private List<String> images;
+//    @ElementCollection(fetch = FetchType.LAZY)
+//    @CollectionTable(name = "product_entity_images", joinColumns = @JoinColumn(name = "id"))
+//    private List<String> images = new ArrayList<>();
 }
